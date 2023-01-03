@@ -9,15 +9,24 @@ def get_data(url):
      return soup
 
 def parse(soup):
-    results = soup.find_all('div', {'class': 's-item__details clearfix'})
+    productlist = []
+    results = soup.find_all('div', {'class': 's-item__info clearfix'})
     for item in results:
-        products = {
-            #'title':      item.find('div', {'class': 's-item__title'}).text,
-            'soldprice':  float(item.find('span', {'class': 's-item__price'}).text.replace('$', '').replace(',', '').strip()),
-            'link':        item.find('a', {'class': 's-item__link'}).text,
+        product = {
+            'title':      item.find('div', {'class': 's-item__title'}).find('span', {'role': 'heading'}).text,
+            'soldprice':  item.find('span', {'class': 's-item__price'}).text.replace('$', '').replace(',', '').replace('EUR', '').strip(),
+            'link':        item.find('a', {'class': 's-item__link'})['href'],
         }
-    print(products)
-    return
+        productlist.append(product)
+    return productlist
+
+def output(productlist):
+    productdf = pd.DataFrame(productlist)
+    productdf.to_csv('output.csv', index = False)
+    print("Saved to CSV")
+    return productdf
 
 soup = get_data(url)
-parse(soup)
+productlist = parse(soup)
+productdf = output(productlist)
+print(productdf.head())
