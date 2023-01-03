@@ -19,3 +19,5 @@ for job in jobs:
         Company Name: {company_name}
         Required Skills: {skills}
         ''')
+
+        print("OK test fermeture")
